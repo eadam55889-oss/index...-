@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إلى الأبد ❤️</title>
+    <style>
+        body {
+            background-color: #fdfdf0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            color: #5d4037;
+        }
+
+        #login-screen {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            z-index: 10;
+        }
+
+        .pass-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            direction: ltr; 
+        }
+
+        .pass-field {
+            width: 45px;
+            height: 55px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            outline: none;
+            transition: 0.3s;
+            /* منع ظهور أسهم الزيادة والنقصان */
+            -moz-appearance: textfield;
+        }
+        .pass-field::-webkit-outer-spin-button,
+        .pass-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .pass-field:focus { border-color: #e91e63; box-shadow: 0 0 5px rgba(233, 30, 99, 0.3); }
+
+        #main-content {
+            display: none;
+            text-align: center;
+            animation: fadeIn 2s;
+        }
+
+        h1 { font-style: italic; color: #880e4f; margin-bottom: 30px; font-size: 2.2rem; }
+
+        .counter-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 20px;
+            min-width: 85px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #fce4ec;
+        }
+
+        .number { font-size: 32px; font-weight: bold; color: #d81b60; display: block; }
+        .label { font-size: 13px; color: #8d6e63; font-weight: bold; }
+
+        .heart {
+            position: absolute;
+            color: #ff4081;
+            font-size: 20px;
+            pointer-events: none;
+            animation: floatUp 6s linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <h2 style="color: #880e4f;">الباسورد لو سمحتي 🙂‍↕️</h2>
+        <div class="pass-container">
+            <input type="tel" inputmode="numeric" maxlength="1" class="pass-field" onkeyup="moveNext(this, 0)">
+            <input type="tel" inputmode="numeric" maxlength="1" class="pass-field" onkeyup="moveNext(this, 1)">
+            <input type="tel" inputmode="numeric" maxlength="1" class="pass-field" onkeyup="moveNext(this, 2)">
+            <input type="tel" inputmode="numeric" maxlength="1" class="pass-field" onkeyup="moveNext(this, 3)">
+            <input type="tel" inputmode="numeric" maxlength="1" class="pass-field" onkeyup="moveNext(this, 4)">
+        </div>
+        <p id="error" style="color: #d32f2f; display: none;">الرمز غير صحيح!</p>
+    </div>
+
+    <div id="main-content">
+        <h1>كل لحظه وانا معاكي♥</h1>
+        <div class="counter-container">
+            <div class="box"><span id="years" class="number">0</span><span class="label">سنة</span></div>
+            <div class="box"><span id="days" class="number">0</span><span class="label">يوم</span></div>
+            <div class="box"><span id="hours" class="number">0</span><span class="label">ساعة</span></div>
+            <div class="box"><span id="minutes" class="number">0</span><span class="label">دقيقة</span></div>
+            <div class="box"><span id="seconds" class="number">0</span><span class="label">ثانية</span></div>
+        </div>
+    </div>
+
+    <script>
+        const inputs = document.querySelectorAll('.pass-field');
+
+        function moveNext(el, idx) {
+            // التحقق من أن المدخل رقم
+            el.value = el.value.replace(/[^0-9]/g, '');
+
+            if (el.value.length === 1 && idx < 4) {
+                inputs[idx + 1].focus();
+            }
+
+            // إذا وصلنا للخانة الأخيرة
+            if (idx === 4 && el.value.length === 1) {
+                validatePass();
+            }
+        }
+
+        function validatePass() {
+            let pass = "";
+            inputs.forEach(input => pass += input.value);
+            
+            if (pass === "55555") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                startCounter();
+                startHearts();
+            } else {
+                document.getElementById('error').style.display = 'block';
+                setTimeout(() => {
+                    inputs.forEach(i => i.value = "");
+                    inputs[0].focus();
+                }, 400);
+            }
+        }
+
+        function startCounter() {
+            const startDate = new Date('March 27, 2025 00:00:00').getTime();
+            setInterval(function() {
+                const now = new Date().getTime();
+                const distance = now - startDate;
+                
+                const msPerSecond = 1000, msPerMinute = 60000, msPerHour = 3600000, msPerDay = 86400000, msPerYear = 31557600000;
+
+                document.getElementById("years").innerText = Math.floor(distance / msPerYear);
+                document.getElementById("days").innerText = Math.floor((distance % msPerYear) / msPerDay);
+                document.getElementById("hours").innerText = Math.floor((distance % msPerDay) / msPerHour);
+                document.getElementById("minutes").innerText = Math.floor((distance % msPerHour) / msPerMinute);
+                document.getElementById("seconds").innerText = Math.floor((distance % msPerMinute) / msPerSecond);
+            }, 1000);
+        }
+
+        function startHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 6000);
+            }, 400);
+        }
+    </script>
+</body>
+</html>
