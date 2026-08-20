@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة خاصة</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* صورة الخلفية */
+            background-image: url('bg.jpg'); 
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #fff;
+            width: 85%;
+            max-width: 320px;
+        }
+
+        /* الزرار الأولي */
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background-color: #ff416c;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            transition: 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background-color: #ff4b2b;
+        }
+
+        /* قسم الانتظار والعداد */
+        #waitSection {
+            display: none;
+        }
+
+        .wait-text {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .timer-display {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffde59;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        /* قسم الباسورد النهائي */
+        #passwordSection {
+            display: none;
+        }
+
+        .pass-hint {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffde59;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background-color: #ff4b2b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+        }
+
+        .submit-btn:hover {
+            background-color: #ff416c;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #d8000c;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 8px;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ملف الصوت -->
+    <audio id="mySong" src="song.mp3" loop></audio>
+
+    <div class="card">
+        <!-- 1. الزرار في البداية -->
+        <button class="start-btn" id="startBtn" onclick="startFlow()">دوسي هنا عشان تعرفي الباسورد ✨</button>
+
+        <!-- 2. قسم العداد والانتظار -->
+        <div id="waitSection">
+            <div class="wait-text">استني دقيقة ونص وهقولك الباسورد 🎵🎧</div>
+            <div class="timer-display" id="timer">01:30</div>
+        </div>
+
+        <!-- 3. قسم ظهور الباسورد وادخاله -->
+        <div id="passwordSection">
+            <div class="pass-hint">الباسورد هو: 30/7 😉❤️</div>
+            <h2>اكتبي الباسورد يا منورة</h2>
+            <input type="text" id="passwordInput" placeholder="أدخلي الرقم السري">
+            <button class="submit-btn" onclick="checkPassword()">دخول</button>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 90; // 90 ثانية = دقيقة ونص
+
+        function startFlow() {
+            // تشغيل الصوت
+            let song = document.getElementById("mySong");
+            song.play();
+
+            // إخفاء زرار البداية وإظهار قسم الانتظار
+            document.getElementById("startBtn").style.display = "none";
+            document.getElementById("waitSection").style.display = "block";
+
+            // بدء العداد التنازلي
+            let countdown = setInterval(() => {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                document.getElementById("timer").innerText = minutes + ":" + seconds;
+
+                // عند انتهاء الوقت
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById("waitSection").style.display = "none";
+                    document.getElementById("passwordSection").style.display = "block";
+                }
+            }, 1000);
+        }
+
+        // التحقق من الباسورد والتحويل للصفحة الثانية
+        function checkPassword() {
+            let password = document.getElementById("passwordInput").value.trim();
+            let message = document.getElementById("message");
+
+            if (password === "30/7") {
+                window.location.href = "hj.html";
+            } else {
+                message.style.display = "block";
+                message.innerText = "غلط يا منورة";
+            }
+        }
+    </script>
+</body>
+</html>

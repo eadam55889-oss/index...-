@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نعرف بعض من...</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background-image: url('bg2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            padding: 20px 15px 40px 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* تساقط القلوب في الأمام (في الوش فوق كل حاجة) */
+        .heart {
+            position: fixed;
+            top: -10vh;
+            color: #ff3366;
+            font-size: 24px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 9999; /* يضمن ظهوره فوق كل البطاقات والصور */
+            animation: fall linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 51, 102, 0.8));
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* العداد */
+        .counter-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .counter-title {
+            font-size: 20px;
+            margin-bottom: 12px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer {
+            display: flex;
+            justify-content: space-around;
+            gap: 5px;
+        }
+
+        .timer-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 5px;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .timer-box span {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffde59;
+        }
+
+        .timer-box label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        /* معرض الصور */
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 12px;
+        }
+
+        .caption {
+            font-size: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        /* زر المفاجأة */
+        .main-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.5);
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .main-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* النافذة السينمائية (Popup Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 30px 20px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            transform: scale(0.7);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-text {
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .gift-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(56, 239, 125, 0.4);
+        }
+    </style>
+</head>
+<body onclick="playAudio()" ontouchstart="playAudio()">
+
+    <!-- ملف الأغنية -->
+    <audio id="mySong" src="song.mp3" loop></audio>
+
+    <div class="container">
+
+        <!-- العداد فوق خالص -->
+        <div class="counter-card">
+            <div class="counter-title">نعرف بعض من ❤️✨</div>
+            <div class="timer">
+                <div class="timer-box"><span id="days">0</span><label>يوم</label></div>
+                <div class="timer-box"><span id="hours">0</span><label>ساعة</label></div>
+                <div class="timer-box"><span id="minutes">0</span><label>دقيقة</label></div>
+                <div class="timer-box"><span id="seconds">0</span><label>ثانية</label></div>
+            </div>
+        </div>
+
+        <!-- الصورة الأولى -->
+        <div class="gallery-item">
+            <img src="img1.jpg" alt="صورة 1">
+            <div class="caption">ربنا يوفقك واشوفك احسن واحسن 💖✨</div>
+        </div>
+
+        <!-- الصورة الثانية -->
+        <div class="gallery-item">
+            <img src="img2.jpg" alt="صورة 2">
+            <div class="caption">الكتكوته بتاعتنا الي يارب مشوفها مهمومه ابدا وربنا يجبر بخاطرها 🐣🌸🥺</div>
+        </div>
+
+        <!-- الصورة الثالثة -->
+        <div class="gallery-item">
+            <img src="img3.jpg" alt="صورة 3">
+            <div class="caption">روحيييييييييي 🙈❤️✨</div>
+        </div>
+
+        <!-- زرار تحت خالص -->
+        <button class="main-btn" onclick="openCinematicModal()">دوسي هنا ✨</button>
+
+    </div>
+
+    <!-- الرسالة السينمائية Pop-up -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-text">
+                منورة روح قلبي ❤️✨<br>
+                علي فكره انتي بقيتي شخص غالي اوي عندي فشخخخخ 🥺💖<br>
+                ويارب تفضلي منورة حياتي دايما ياروحي 🥰<br>
+                وشكرا اوي لوقوفك جنبي 🌹<br><br>
+                وعندي طلب اخير عشان تعرفيه دوسي هنا 👇
+            </div>
+            <a href="https://www.youtube.com/watch?v=F1UUmGHSt0Y" target="_blank" class="gift-btn">دوسي هنا 🎁</a>
+        </div>
+    </div>
+
+    <script>
+        let audioPlayed = false;
+
+        // تشغيل الصوت مع أول لمسة للصفحة
+        function playAudio() {
+            if (!audioPlayed) {
+                let song = document.getElementById("mySong");
+                song.play().then(() => {
+                    audioPlayed = true;
+                }).catch(err => console.log("في انتظار التفاعل"));
+            }
+        }
+
+        // العداد يحسب من تاريخ 30 يوليو السابق
+        function startCounter() {
+            let now = new Date();
+            let startYear = now.getFullYear();
+            
+            let startDate = new Date(startYear, 6, 30); // 30/7
+            if (now < startDate) {
+                startDate = new Date(startYear - 1, 6, 30);
+            }
+
+            setInterval(() => {
+                let currentTime = new Date();
+                let diff = currentTime - startDate;
+
+                let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                let minutes = Math.floor((diff / (1000 * 60)) % 60);
+                let seconds = Math.floor((diff / 1000) % 60);
+
+                document.getElementById("days").innerText = days;
+                document.getElementById("hours").innerText = hours;
+                document.getElementById("minutes").innerText = minutes;
+                document.getElementById("seconds").innerText = seconds;
+            }, 1000);
+        }
+        startCounter();
+
+        // تأثير تساقط القلوب في الأمام
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.opacity = Math.random() * 0.8 + 0.2;
+            heart.style.fontSize = Math.random() * 16 + 14 + 'px';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+        setInterval(createHeart, 250);
+
+        // فتح النافذة السينمائية
+        function openCinematicModal() {
+            document.getElementById("modalOverlay").classList.add("active");
+        }
+    </script>
+</body>
+</html>

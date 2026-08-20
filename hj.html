@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هل نعرف بعض؟</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('bg2.jpg'); 
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #fff;
+            width: 90%;
+            max-width: 350px;
+            position: relative;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 22px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            min-height: 60px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-yes {
+            background-color: #ff4b2b;
+            color: white;
+        }
+
+        .btn-yes:hover {
+            background-color: #ff416c;
+        }
+
+        .btn-no {
+            background-color: #ffffff;
+            color: #333;
+            position: relative;
+        }
+
+        #wrongMsg {
+            color: #ff3333;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #jokeMsg {
+            color: #2e7d32;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .btn-next {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background-color: #25d366;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            display: none;
+        }
+
+        .btn-next:hover {
+            background-color: #1ebc57;
+        }
+    </style>
+</head>
+
+<body onclick="playAudio()">
+
+    <!-- ملف الصوت -->
+    <audio id="mySong" src="song.mp3" loop></audio>
+
+    <div class="card">
+        <h2>هل نعرف بعض من زمان؟</h2>
+        
+        <div class="buttons-container">
+            <button class="btn btn-yes" onclick="handleYes()">أه</button>
+            <button class="btn btn-no" id="noBtn" onclick="handleNo()">لا</button>
+        </div>
+
+        <div id="wrongMsg">الاجابة غلط ❌</div>
+        <div id="jokeMsg">بهزر معاكي معلش 😁</div>
+
+        <button class="btn-next" id="nextBtn" onclick="goToNextPage()">كمل ➔</button>
+    </div>
+
+    <script>
+        let audioPlayed = false;
+        let escapeCount = 0;
+
+        let song = document.getElementById("mySong");
+
+        // استرجاع مكان الأغنية من الصفحة الأولى
+        window.addEventListener("DOMContentLoaded", function () {
+            let savedTime = sessionStorage.getItem("songTime");
+
+            if (savedTime !== null) {
+                song.currentTime = parseFloat(savedTime);
+            }
+        });
+
+        // تشغيل الأغنية
+        function playAudio() {
+            if (!audioPlayed) {
+                song.play().then(() => {
+                    audioPlayed = true;
+                }).catch(err => {
+                    console.log("في انتظار التفاعل لتشغيل الصوت");
+                });
+            }
+        }
+
+        // حفظ مكان الأغنية قبل الانتقال للصفحة الثالثة
+        function saveAudioPosition() {
+            if (song && !song.paused) {
+                sessionStorage.setItem("songTime", song.currentTime);
+            }
+        }
+
+        // عند الضغط على زر "أه"
+        function handleYes() {
+            document.getElementById("jokeMsg").style.display = "none";
+            document.getElementById("wrongMsg").style.display = "block";
+        }
+
+        // عند الضغط أو محاولة الضغط على زر "لا"
+        function handleNo() {
+            document.getElementById("wrongMsg").style.display = "none";
+
+            let noBtn = document.getElementById("noBtn");
+
+            if (escapeCount < 3) {
+
+                // تحريك الزر لمكان عشوائي
+                let randomX = (Math.random() - 0.5) * 160;
+                let randomY = (Math.random() - 0.5) * 100;
+
+                noBtn.style.transform =
+                    `translate(${randomX}px, ${randomY}px)`;
+
+                escapeCount++;
+
+            } else {
+
+                // المرة الرابعة بعد الهروب 3 مرات
+                noBtn.style.transform = `translate(0px, 0px)`;
+
+                document.getElementById("jokeMsg").style.display = "block";
+                document.getElementById("nextBtn").style.display = "block";
+            }
+        }
+
+        // الانتقال للصفحة الثالثة
+        function goToNextPage() {
+
+            // حفظ مكان الأغنية الحالي
+            saveAudioPosition();
+
+            // الانتقال
+            window.location.href = "jj.html";
+        }
+    </script>
+
+</body>
+</html>
